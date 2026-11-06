@@ -1,0 +1,14 @@
+[Unit]
+Description=Todo Flask API (Gunicorn)
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/opt/todo-app
+EnvironmentFile=/etc/todo-app.env
+ExecStart=/opt/todo-app/venv/bin/gunicorn -w 2 -b 0.0.0.0:5000 app:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>3-Tier To-Do</title>
+<style>body{font-family:sans-serif;max-width:480px;margin:40px auto}li{margin:6px 0}button{margin-left:8px}</style></head>
+<body>
+<h2>3-Tier To-Do (Nginx → Flask → MySQL)</h2>
+<form id="f"><input id="t" placeholder="New task" required><button>Add</button></form>
+<ul id="l"></ul>
+<small id="s"></small>
+<script>
+async function load(){
+  const d = await (await fetch('/api/todos')).json();
+  l.innerHTML = '';
+  d.todos.forEach(x => {
+    const li = document.createElement('li'); li.textContent = x.title;
+    const b = document.createElement('button'); b.textContent = 'x';
+    b.onclick = async () => { await fetch('/api/todos/' + x.id, {method:'DELETE'}); load(); };
+    li.appendChild(b); l.appendChild(li);
+  });
+  s.textContent = 'Served by app server: ' + d.served_by;
+}
+f.onsubmit = async e => {
+  e.preventDefault();
+  await fetch('/api/todos', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title: t.value})});
+  t.value = ''; load();
+};
+load();
+</script></body></html>
